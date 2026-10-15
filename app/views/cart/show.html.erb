@@ -1,0 +1,31 @@
+<h1 class="text-2xl font-bold mb-6">Your Cart</h1>
+
+<% if @cart.line_items.any? %>
+  <div class="space-y-4">
+    <% @cart.line_items.each do |item| %>
+      <div class="flex justify-between items-center border-b pb-4">
+        <div>
+          <p class="font-semibold"><%= item.product.name %></p>
+          <p class="text-gray-600">$<%= item.product.price %> × <%= item.quantity %> = $<%= item.subtotal %></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <%= form_with url: cart_path, method: :patch, local: true do |f| %>
+            <%= f.hidden_field :id, value: item.id %>
+            <%= f.number_field :quantity, value: item.quantity, min: 1, class: "w-16 border rounded px-2 py-1" %>
+            <%= f.submit "Update", class: "bg-blue-500 text-white px-3 py-1 rounded text-sm" %>
+          <% end %>
+          <%= button_to "Remove", cart_path(item), method: :delete, data: { confirm: "Remove this item?" }, class: "bg-red-500 text-white px-3 py-1 rounded text-sm" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6">
+    <p class="text-xl font-bold">Total: $<%= @cart.total_price %></p>
+    <%= link_to "Checkout", new_order_path, class: "bg-green-500 text-white px-6 py-2 rounded-lg inline-block mt-4" %>
+  </div>
+<% else %>
+  <p class="text-gray-600">Your cart is empty.</p>
+<% end %>
+
+<%= link_to "Continue Shopping", products_path, class: "text-blue-500 hover:underline mt-4 inline-block" %>
